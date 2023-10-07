@@ -12,6 +12,7 @@ class Bus(models.Model):
 
     def __str__(self):
         return self.bus_number
+        
     
 
 class Seat(models.Model):
@@ -47,8 +48,11 @@ class Reservation(models.Model):
     reservation_date = models.DateField(auto_now_add=True)
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE)  # Each reservation is associated with a bus
+    status = models.CharField(max_length=20, choices=[("pending", "Pending"), ("confirmed", "Confirmed")])
     route = models.ForeignKey(BusRoute, on_delete=models.CASCADE)
     seats = models.ManyToManyField(Seat)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return f"Reservation by {self.user.email} on {self.reservation_date}"
@@ -63,3 +67,14 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment by {self.user.email} on {self.payment_date}"
+    
+class Booking(models.Model):
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
+    route = models.ForeignKey(BusRoute, on_delete=models.CASCADE)
+    seats = models.ManyToManyField(Seat)
+    status = models.CharField(max_length=20, choices=[("pending", "Pending"), ("confirmed", "Confirmed")])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Booking by {self.user.email} for {self.bus.bus_number}"
