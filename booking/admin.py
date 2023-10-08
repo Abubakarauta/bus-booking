@@ -8,4 +8,5 @@ admin.site.register(Booking)
 admin.site.register(Reservation)
 admin.site.register(Seat)
 admin.site.register(Payment)
+admin.site.register(Stop)
 

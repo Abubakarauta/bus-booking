@@ -1,5 +1,10 @@
 from rest_framework import serializers
 from .models import *
+class StopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stop
+        fields ='__all__'
+
 
 class BusRouteSerializer(serializers.ModelSerializer):
     class Meta:

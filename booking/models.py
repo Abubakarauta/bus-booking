@@ -25,15 +25,17 @@ class Seat(models.Model):
     
 
 
+class Stop(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+        
+
+
 class BusRoute(models.Model):
     route_name = models.CharField(max_length=200)
-    STOPS_CHOICES = (
-        ('Stop 1', 'Stop 1'),
-        ('Stop 2', 'Stop 2'),
-        ('Stop 3', 'Stop 3'),
-        # Add more stops as needed
-    )
-    stops = models.CharField(max_length=100, choices=STOPS_CHOICES)
+    stops = models.ManyToManyField(Stop)
     estimated_travle_time = models.TimeField()
 
 

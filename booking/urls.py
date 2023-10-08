@@ -13,7 +13,7 @@ urlpatterns = [
     path('booking/<int:pk>/confirm/', BookingConfirmView.as_view(), name='bus-booking-confirm'),
     path('booking/history/', BookingHistoryView.as_view(), name='booking-history'),
 
-    #bus
+    #bus 
     path('admin/buses/', BusListCreateView.as_view(), name='admin-bus-list-create'),
     path('admin/buses/<int:pk>/', BusDetailView.as_view(), name='admin-bus-detail'),
 
@@ -24,6 +24,10 @@ urlpatterns = [
     #reservation
     path('reservations/', ReservationListCreateView.as_view(), name='reservation-list-create'),
     path('reservations/<int:pk>/', ReservationDetailView.as_view(), name='reservation-detail'),
+
+    #stops
+    path('stops/', StopListCreateView.as_view(), name='stop-list-create'),
+    path('stops/<int:pk>/', StopDetailView.as_view(), name='stop-detail'),
 
     
     # Payment URL

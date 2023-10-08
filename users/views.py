@@ -28,23 +28,27 @@ class UserRegistrationAPIView(generics.CreateAPIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+#need to have a look at it 
 class LogoutView(APIView):
+    """
+    View to logout a user
+    """
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         try:
-            # Blacklist the refresh token to prevent further use (optional)
-            refresh_token = RefreshToken(request.data.get('refresh_token'))
-            refresh_token.blacklist()
-
-            # Here, you can perform any additional actions related to "logging out"
-            # For example, you might want to clear any session data or perform other cleanup operations.
-            # This will depend on your specific bus booking application's requirements.
-
-            response_data = {'message': 'User logout successfully'}
-            return Response(response_data, status=status.HTTP_200_OK)
+            refresh_token = request.data.get("refresh_token")
+           
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            response = {
+                "message":"Successfully logged out."
+            } 
+            return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
+            print(type(str(e)))
+
+       
             response_data = {'error': 'Invalid refresh token'}
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 

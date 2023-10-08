@@ -63,8 +63,17 @@ class BusDetailView(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(bus)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+#stops 
+class StopListCreateView(generics.ListCreateAPIView):
+    queryset= Stop.objects.all()
+    serializer_class= StopSerializer
+    permission_classes = [AllowAny]
 
-
+class StopDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset= Stop.objects.all()
+    serializer_class= StopSerializer
+    permission_classes = [AllowAny]
+    
 
 ##BOOKING LOGICS
 
