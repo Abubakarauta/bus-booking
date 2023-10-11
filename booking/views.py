@@ -12,11 +12,13 @@ from django.shortcuts import get_object_or_404
 class BusRouteListCreateView(generics.ListCreateAPIView):
     queryset= BusRoute.objects.all()
     serializer_class = BusRouteSerializer
+    permission_classes = [IsAdminUser]
 
 
 class BusRouteDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = BusRoute.objects.all()
     serializer_class = BusRouteSerializer
+    permission_classes =[IsAdminUser]
 
 class BusRouteSearchView(generics.ListAPIView):
     serializer_class = BusRouteSerializer
@@ -45,7 +47,7 @@ class BusListCreateView(generics.ListCreateAPIView):
         serialzer = self.get_serializer(data= request.data)
         if serialzer.is_valid():
             serialzer.save()
-            return Response({'message': 'Bus created successfully'}, status=status.HTTP_201_CREATED)
+            return Response({'message': 'Bus created successfully', "data":serialzer.data}, status=status.HTTP_201_CREATED)
         return Response(serialzer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -67,19 +69,20 @@ class BusDetailView(generics.RetrieveUpdateDestroyAPIView):
 class StopListCreateView(generics.ListCreateAPIView):
     queryset= Stop.objects.all()
     serializer_class= StopSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
 class StopDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset= Stop.objects.all()
     serializer_class= StopSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     
 
 ##BOOKING LOGICS
 
 #Booking creating 
-class BookingCreateView(generics.CreateAPIView):
-    serializer_class = ReservationSerializer
+class BookingCreateView(generics.ListCreateAPIView):
+    queryset= Booking.objects.all()
+    serializer_class = BookingSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -93,8 +96,8 @@ class BookingCreateView(generics.CreateAPIView):
         seat_id = request.data.get('seats')
 
         # Check if the bus, route, and seats exist
-        bus = get_object_or_404(Bus , bus_id)
-        route = get_object_or_404(BusRoute, route_id)
+        bus = get_object_or_404(Bus , pk = bus_id)
+        route = get_object_or_404(BusRoute, pk =route_id)
         seats = Seat.objects.filter(pk__in =seat_id)
 
         # Check if the selected seats are available and do not exceed the bus's capacity
@@ -121,7 +124,7 @@ class BookingCreateView(generics.CreateAPIView):
         return Response(response_data, status=status.HTTP_201_CREATED)
 
 # Retrieve Booking View# Retrieve Booking View
-class BookingDetailView(generics.RetrieveAPIView):
+class BookingDetailView(generics.RetrieveDestroyAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticated]
@@ -149,6 +152,7 @@ class BookingDetailView(generics.RetrieveAPIView):
 class BookingConfirmView(generics.UpdateAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+    pagination_class = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         booking_id = kwargs.get('pk')
@@ -200,6 +204,14 @@ class SeatDetailView(generics.RetrieveAPIView):
     queryset = Seat.objects.all()
     serializer_class = SeatSerializer
   
+class SeatListForBusView(generics.ListAPIView):
+    serializer_class = SeatSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        bus_id = self.kwargs['bus_id']  # Get the bus ID from the URL parameter
+        return Seat.objects.filter(bus__id=bus_id)
+
 #reservations
 class ReservationListCreateView(generics.ListCreateAPIView):
     queryset = Reservation.objects.all()

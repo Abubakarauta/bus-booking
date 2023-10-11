@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from django.db import models
 from users.models import Users  # Import the Users model
 
@@ -10,18 +11,24 @@ class Bus(models.Model):
     departure_time = models.DateTimeField()
     capacity = models.PositiveIntegerField()
 
+    def save(self, *args ,**kwargs):
+        super().save(*args,**kwargs)
+
+        for seat_number in range(1, self.capacity + 1):
+            Seat.objects.create(bus = self, seat_number = str(seat_number))
+
     def __str__(self):
         return self.bus_number
         
     
 
 class Seat(models.Model):
-    seat_number = models.CharField(max_length=100)
-    status = models.CharField(max_length=20, choices=[("available", "Available"), ("reserved", "Reserved")])
+    seat_number = models.IntegerField()
+    status = models.CharField(max_length=20,default='available', choices=[("available", "Available"), ("reserved", "Reserved")])
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.seat_number
+        return str(self.seat_number)
     
 
 
@@ -75,7 +82,7 @@ class Booking(models.Model):
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
     route = models.ForeignKey(BusRoute, on_delete=models.CASCADE)
     seats = models.ManyToManyField(Seat)
-    status = models.CharField(max_length=20, choices=[("pending", "Pending"), ("confirmed", "Confirmed")])
+    status = models.CharField(max_length=20, default="pending",choices=[("pending", "Pending"), ("confirmed", "Confirmed")])
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

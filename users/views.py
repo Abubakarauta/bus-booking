@@ -28,27 +28,30 @@ class UserRegistrationAPIView(generics.CreateAPIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#need to have a look at it 
-class LogoutView(APIView):
+class LogoutView(generics.GenericAPIView):
     """
     View to logout a user
     """
+    queryset = Users.objects.all()
     permission_classes = (IsAuthenticated,)
+    serializer_class = [UserProfileSerializer]
 
     def post(self, request):
+        user = self.request.user
         try:
             refresh_token = request.data.get("refresh_token")
            
             token = RefreshToken(refresh_token)
             token.blacklist()
+
+            serializer = UserProfileSerializer(user)
             response = {
-                "message":"Successfully logged out."
+                "message":"Successfully logged out.",
+                "data": serializer.data
             } 
             return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
-            print(type(str(e)))
-
-       
+    
             response_data = {'error': 'Invalid refresh token'}
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
