@@ -26,6 +26,13 @@ class BusSerializer(serializers.ModelSerializer):
         model = Bus
         fields = '__all__'
 
+
+class BusSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bus
+        fields = '__all__'
+
+
 class SeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seat

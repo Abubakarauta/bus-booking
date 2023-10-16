@@ -7,6 +7,10 @@ urlpatterns = [
     path('admin/buses/', BusListCreateView.as_view(), name='admin-bus-list-create'),
     path('admin/buses/<int:pk>/', BusDetailView.as_view(), name='admin-bus-detail'),
     path('bus/<int:bus_id>/seats/', SeatListForBusView.as_view(), name='bus-seat-list'),
+    
+    #bus search with departure and arival locations
+
+    path('buses/search/', BusSearchView.as_view(), name='bus-search'),
 
 
     #stops
@@ -19,7 +23,6 @@ urlpatterns = [
     path('routes/search/', BusRouteSearchView.as_view(), name='route-search' ),
     
     #booking
-   
     path('bookings/', BookingCreateView.as_view(), name='bus-booking-create'),
     path('bookings/<int:pk>/', BookingDetailView.as_view(), name='bus-booking-detail'),
     path('bookings/<int:pk>/confirm/', BookingConfirmView.as_view(), name='bus-booking-confirm'),

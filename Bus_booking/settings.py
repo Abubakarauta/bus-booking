@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'users',
     #third party apps
     'rest_framework',
+     'django_filters',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'drf_spectacular',

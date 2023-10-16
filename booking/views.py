@@ -1,5 +1,6 @@
 from rest_framework import generics,status, filters
 from .serializers import *
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import *
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
@@ -36,6 +37,7 @@ class BusRouteSearchView(generics.ListAPIView):
         return queryset
 
 
+
 # bus logics
 
 class BusListCreateView(generics.ListCreateAPIView):
@@ -64,6 +66,56 @@ class BusDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(bus)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class BusSearchView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = BusSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {
+        'departure_location': ['exact'],
+        'arrival_location': ['exact'],
+    }
+
+    def get_queryset(self):
+        # Get the 'departure_location' and 'arrival_location' parameters from the query string
+        departure_location = self.request.GET.get('departure_location')
+        arrival_location = self.request.GET.get('arrival_location')
+
+        # Use these parameters to filter the queryset
+        queryset = Bus.objects.all()
+
+        if departure_location:
+            queryset = queryset.filter(departure_location__icontains=departure_location)
+        if arrival_location:
+            queryset = queryset.filter(arrival_location__icontains=arrival_location)
+
+        return queryset
+
+     
+
+# class BusSearchView(generics.ListAPIView):
+#     serializer_class = BusSerializer
+#     permission_classes = [AllowAny]
+
+#     def get_queryset(self):
+#         # Access query parameters using the get() method
+#         departure_location = self.request.GET.get('departure_location')
+#         arrival_location = self.request.GET.get('arrival_location')
+
+#         # Use the query parameters to filter the queryset
+#         queryset = Bus.objects.filter(
+#             departure_location__iexact=departure_location,
+#             arrival_location__iexact=arrival_location
+#         )
+
+#         return queryset
+
+#     def list(self, request, *args, **kwargs):
+#         queryset = self.get_queryset()
+#         serializer = BusSerializer(queryset, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 #stops 
 class StopListCreateView(generics.ListCreateAPIView):

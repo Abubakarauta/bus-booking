@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from .tokens import create_jwt_pair_for_user
 from .models import Users
-from .serializers import UserRegistrationSerialzer, UserProfileSerializer
+from .serializers import UserRegistrationSerialzer, UserProfileSerializer , UsersSerializer
 
 class UserRegistrationAPIView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerialzer
@@ -56,14 +56,16 @@ class LogoutView(generics.GenericAPIView):
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
+class UserListView(generics.ListAPIView):
+    queryset = Users.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = UsersSerializer
 
 
     
 
 class UserProfileView(generics.RetrieveAPIView):
-
+    queryset= Users.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class= UserProfileSerializer
 

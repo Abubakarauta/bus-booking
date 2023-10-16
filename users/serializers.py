@@ -37,18 +37,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 
-#class UserAuthenticationSerializer(TokenObtainPairView):
-
- #   email = serializers.EmailField()
-  #  password = serializers.CharField(write_only = True, required = True, style = { 'input':'password '})
-   # 
-    #def validate(self, data):
-     #   email = data.get('email')
-      #  password =data.get('password')
-#
- #       user = authenticate(username = email , password= password)
-#
- #       if not user:
-  #          raise serializers.ValidationError('invalid Credentials')
-   ##        raise serializers.ValidationError('User account is disable')
-     #   return user
+class UsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['id', 'first_name', 'last_name', 'email']
