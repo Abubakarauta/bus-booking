@@ -56,7 +56,7 @@ class BusListCreateView(generics.ListCreateAPIView):
 class BusDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer
-    permission_classes = [IsAdminUser]  # Restrict to admin users
+    permission_classes = [IsAuthenticated]  # Restrict to admin users
 
     def retrieve(self, request, *args, **kwargs):
         bus_id = kwargs.get('pk')
