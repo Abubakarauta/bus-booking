@@ -17,12 +17,15 @@ SECRET_KEY = 'django-insecure-$al2o92#5we1dpsg=_!!b8@o%99)hezr61xalz=@#!3z6)i6&e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -31,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'booking',
     'users',
+    'bus',
     #third party apps
     'rest_framework',
      'django_filters',
@@ -88,6 +92,7 @@ SPECTACULAR_SETTINGS = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

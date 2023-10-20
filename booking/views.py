@@ -38,61 +38,6 @@ class BusRouteSearchView(generics.ListAPIView):
 
 
 
-# bus logics
-
-class BusListCreateView(generics.ListCreateAPIView):
-    queryset = Bus.objects.all()
-    serializer_class = BusSerializer
-    permission_classes = [IsAdminUser]
-
-    def create(self, request, *args, **kwargs):
-        serialzer = self.get_serializer(data= request.data)
-        if serialzer.is_valid():
-            serialzer.save()
-            return Response({'message': 'Bus created successfully', "data":serialzer.data}, status=status.HTTP_201_CREATED)
-        return Response(serialzer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class BusDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Bus.objects.all()
-    serializer_class = BusSerializer
-    permission_classes = [IsAuthenticated]  # Restrict to admin users
-
-    def retrieve(self, request, *args, **kwargs):
-        bus_id = kwargs.get('pk')
-
-        # Check if the bus exists, or return a 404 response
-        bus = get_object_or_404(Bus, pk=bus_id)
-
-        serializer = self.get_serializer(bus)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class BusSearchView(generics.ListAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = BusSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = {
-        'departure_location': ['exact'],
-        'arrival_location': ['exact'],
-    }
-
-    def get_queryset(self):
-        # Get the 'departure_location' and 'arrival_location' parameters from the query string
-        departure_location = self.request.GET.get('departure_location')
-        arrival_location = self.request.GET.get('arrival_location')
-
-        # Use these parameters to filter the queryset
-        queryset = Bus.objects.all()
-
-        if departure_location:
-            queryset = queryset.filter(departure_location__icontains=departure_location)
-        if arrival_location:
-            queryset = queryset.filter(arrival_location__icontains=arrival_location)
-
-        return queryset
-
-     
 
 # class BusSearchView(generics.ListAPIView):
 #     serializer_class = BusSerializer
@@ -246,6 +191,61 @@ class BookingHistoryView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user  # Get the current user
         return Booking.objects.filter(user=user, status='confirmed').order_by('-created_at')
+
+
+# bus logics
+
+class BusListCreateView(generics.ListCreateAPIView):
+    queryset = Bus.objects.all()
+    serializer_class = BusSerializer
+    permission_classes = [IsAdminUser]
+
+    def create(self, request, *args, **kwargs):
+        serialzer = self.get_serializer(data= request.data)
+        if serialzer.is_valid():
+            serialzer.save()
+            return Response({'message': 'Bus created successfully', "data":serialzer.data}, status=status.HTTP_201_CREATED)
+        return Response(serialzer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BusDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Bus.objects.all()
+    serializer_class = BusSerializer
+    permission_classes = [IsAuthenticated]  # Restrict to admin users
+
+    def retrieve(self, request, *args, **kwargs):
+        bus_id = kwargs.get('pk')
+
+        # Check if the bus exists, or return a 404 response
+        bus = get_object_or_404(Bus, pk=bus_id)
+
+        serializer = self.get_serializer(bus)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class BusSearchView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = BusSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {
+        'departure_location': ['exact'],
+        'arrival_location': ['exact'],
+    }
+
+    def get_queryset(self):
+        # Get the 'departure_location' and 'arrival_location' parameters from the query string
+        departure_location = self.request.GET.get('departure_location')
+        arrival_location = self.request.GET.get('arrival_location')
+
+        # Use these parameters to filter the queryset
+        queryset = Bus.objects.all()
+
+        if departure_location:
+            queryset = queryset.filter(departure_location__icontains=departure_location)
+        if arrival_location:
+            queryset = queryset.filter(arrival_location__icontains=arrival_location)
+
+        return queryset
 
 ## seat logics 
 class SeatListView(generics.ListAPIView):

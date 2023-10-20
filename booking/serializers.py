@@ -21,6 +21,17 @@ class BookingHistorySerializer(serializers.ModelSerializer):
         model = Booking
         fields = ['created_at', 'bus', 'route', 'status']
 
+
+class ReservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reservation
+        fields = '__all__'
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model =Payment
+        fields = '__all__'
+
 class BusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bus
@@ -33,17 +44,9 @@ class BusSearchSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
+
 class SeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seat
-        fields = '__all__'
-
-class ReservationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Reservation
-        fields = '__all__'
-
-class PaymentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model =Payment
         fields = '__all__'

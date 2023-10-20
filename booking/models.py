@@ -4,11 +4,15 @@ from users.models import Users  # Import the Users model
 
 # Create your models here.
 
+
+    
 class Bus(models.Model):
     bus_number = models.CharField(max_length=100)
     departure_location = models.CharField(max_length=100)
     arrival_location = models.CharField(max_length=100)
     departure_time = models.DateTimeField()
+    route = models.CharField(max_length=30, default=None, null=True, blank=True)
+    price = models.CharField(max_length=30, default=None, null=True, blank=True)
     capacity = models.PositiveIntegerField()
 
     def save(self, *args ,**kwargs):
@@ -17,9 +21,14 @@ class Bus(models.Model):
         for seat_number in range(1, self.capacity + 1):
             Seat.objects.create(bus = self, seat_number = str(seat_number))
 
+    def routesave(self, route_name, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Create a BusRoute instance with the specified route name and associate it with the current bus
+        route = BusRoute.objects.create(route_name=route_name, bus=self)
+
     def __str__(self):
         return self.bus_number
-        
     
 
 class Seat(models.Model):
@@ -44,6 +53,7 @@ class BusRoute(models.Model):
     route_name = models.CharField(max_length=200)
     stops = models.ManyToManyField(Stop)
     estimated_travle_time = models.TimeField()
+    bus  = models.ForeignKey(Bus ,on_delete=models.CASCADE , default=None, null=True)
 
 
     def __str__(self):
