@@ -83,42 +83,66 @@ class BookingCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        # later on we  can also handle payment and other booking-related steps.
+        user = request.user
 
-        user = self.request.user
-
-        # Get bus, route, and seat IDs from the request data
-        bus_id= request.data.get('bus')
-        route_id = request.data.get('route')
+        print(user)
+        bus_pk = request.data.get('bus')
+        route = request.data.get('route')
         seat_id = request.data.get('seats')
 
-        # Check if the bus, route, and seats exist
-        bus = get_object_or_404(Bus , pk = bus_id)
-        route = get_object_or_404(BusRoute, pk =route_id)
-        seats = Seat.objects.filter(pk__in =seat_id)
+        print(bus_pk, route,seat_id)
+        bus = get_object_or_404(Bus, pk=bus_pk)
+        seat = get_object_or_404(Seat, pk=seat_id)
 
-        # Check if the selected seats are available and do not exceed the bus's capacity
-        unavailable_seats = seats.filter(status= 'reserved')
-        if unavailable_seats or len(seats)> bus.capacity:
-            return Response({'message': 'Selected seats are not available or exceed the bus capacity.'}, status=status.HTTP_400_BAD_REQUEST)
+        print(seat.status, 'seat status')
+        if seat.status == 'reserved':
+            return Response({'message': 'Selected seat is reserved.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Create a new booking
-        booking = Booking(user=user, bus=bus, route=route)
-        booking.save()
-        booking.seats.set(seats)
+        booking = Booking.objects.create(user=user,bus=bus,route=route)
+        booking.seats.set([seat])
+        seat.status = 'reserved'
+        seat.save()
 
-         # Update seat statuses to 'reserved'
-        seats.update(status = 'reserved')
-
-
-
-        serializer= self.get_serializer(booking)
-
-        response_data = {
-            'message': 'Booking created successfully',
-            'data':serializer.data
+        reponse = {
+            "message":"booking created succcesfully",
+            "booking_id": booking.pk,
         }
-        return Response(response_data, status=status.HTTP_201_CREATED)
+        return Response(reponse, status=status.HTTP_201_CREATED)
+        # later on we  can also handle payment and other booking-related steps.
+
+        # user = self.request.user
+
+        # # Get bus, route, and seat IDs from the request data
+        # bus_number= request.data.get('bus')
+        # route = request.data.get('route')
+        # seat_id = request.data.get('seats')
+
+        # # Check if the bus, route, and seats exist
+        # bus = Bus.objects.filter(bus_number =  bus_number)
+        # # route = get_object_or_404(BusRoute, pk =route_id)
+        # seats = Seat.objects.filter(pk=seat_id)
+
+        # # Check if the selected seats are available and do not exceed the bus's capacity
+        # unavailable_seats = seats.filter(status= 'reserved')
+        # if unavailable_seats.exists() or len(seats)> bus.capacity:
+        #     return Response({'message': 'Selected seats are not available or exceed the bus capacity.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # # Create a new booking
+        # booking = Booking.objects.create(user=user, bus=bus, route=route)
+        # booking.seats.set(seats)
+
+        #  # Update seat statuses to 'reserved'
+        # seats.update(status = 'reserved')
+
+
+
+        # serializer= self.get_serializer(booking)
+
+        # response_data = {
+        #     'message': 'Booking created successfully',
+        #     'data':serializer.data
+        # }
+        # return Response(response_data, status=status.HTTP_201_CREATED)
 
 # Retrieve Booking View# Retrieve Booking View
 class BookingDetailView(generics.RetrieveDestroyAPIView):
@@ -151,7 +175,7 @@ class BookingConfirmView(generics.UpdateAPIView):
     serializer_class = BookingSerializer
     pagination_class = [IsAuthenticated]
 
-    def update(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         booking_id = kwargs.get('pk')
 
         # Check if the booking exists, or return a 404 response

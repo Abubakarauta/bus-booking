@@ -15,11 +15,11 @@ class Bus(models.Model):
     price = models.CharField(max_length=30, default=None, null=True, blank=True)
     capacity = models.PositiveIntegerField()
 
-    def save(self, *args ,**kwargs):
-        super().save(*args,**kwargs)
+    # def save(self, *args ,**kwargs):
+    #     super().save(*args,**kwargs)
 
-        for seat_number in range(1, self.capacity + 1):
-            Seat.objects.create(bus = self, seat_number = str(seat_number))
+    #     for seat_number in range(1, self.capacity + 1):
+    #         Seat.objects.create(bus = self, seat_number = str(seat_number))
 
     def routesave(self, route_name, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -90,7 +90,8 @@ class Payment(models.Model):
 class Booking(models.Model):
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
-    route = models.ForeignKey(BusRoute, on_delete=models.CASCADE)
+    # route = models.ForeignKey(BusRoute, on_delete=models.CASCADE)
+    route  = models.CharField(max_length=100, default=None)
     seats = models.ManyToManyField(Seat)
     status = models.CharField(max_length=20, default="pending",choices=[("pending", "Pending"), ("confirmed", "Confirmed")])
     created_at = models.DateTimeField(auto_now_add=True)
