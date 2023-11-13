@@ -164,7 +164,9 @@ class BookingDetailView(generics.RetrieveDestroyAPIView):
 
         response = {
             "message": "Booking detail retrieved successfully",
-            "data": serializer.data
+            "data": serializer.data,
+            "username": request.user.username
+
         }
 
         return Response(response, status=status.HTTP_200_OK)
